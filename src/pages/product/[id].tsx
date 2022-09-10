@@ -7,18 +7,6 @@ import Stripe from "stripe";
 import { stripe } from "../../lib/stripe";
 import { ImageContainer, ProductContainer, ProductDetails } from "../../styles/pages/product"
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  return {
-    paths: [
-      {
-        params: { id: '' }
-      }
-    ],
-    fallback: 'blocking',
-  }
-}
-
-
 interface ProductProps {
   product: {
     id: string
@@ -75,6 +63,15 @@ export default function Product({ product }: ProductProps) {
       </ProductContainer>
     </>
   )
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    paths: [
+      { params: { id: 'prod_MPLmjCnaSG8Hfc' } },
+    ],
+    fallback: 'blocking',
+  }
 }
 
 export const getStaticProps: GetStaticProps<any, { id: string }> = async ({ params }) => {
