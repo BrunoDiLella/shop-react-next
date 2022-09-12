@@ -1,29 +1,29 @@
-import { AppProps } from "next/app"
-import { globalStyles } from "../styles/global"
+import { useState } from 'react'
+import { AppProps } from 'next/app'
 
-import logoImg from "../assets/logo.svg"
-import { Container, Header } from "../styles/pages/app"
+import { Header } from '../components/header'
+import { Cart } from '../components/cart-modal'
 
-import Image from "next/future/image"
-import Link from "next/link"
+import { CartProvider } from '../contexts/cart'
+import { Container } from '../styles/pages/app'
+import { globalStyles } from '../styles/globals'
 
 globalStyles()
-const cancelUrl = `${process.env.NEXT_URL}/`;
 
-function App({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps }: AppProps) {
+  const [isCartOpen, setIsCartOpen] = useState(false)
+
   return (
-   
-
-    <Container>
-      <Header>
-      <Link href="/" >
-      <Image src={logoImg} alt="" />
-      </Link>
-      </Header>
-
-      <Component {...pageProps} />
-    </Container>
+	  <CartProvider>
+		  {isCartOpen && (
+			  <Cart onClose={()=>setIsCartOpen(false)} />
+      )}
+      <Container>
+        <Header onModalOpen={()=>setIsCartOpen(true)}/>
+        <Component {...pageProps} />
+      </Container>
+    </CartProvider>
   )
 }
 
-export default App
+export default MyApp
