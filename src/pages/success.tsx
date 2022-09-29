@@ -4,7 +4,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Stripe from 'stripe'
 import { stripe } from'../lib/stripe'
-import { SuccessContainer, ImageContainer, ProductsContainer } from '../styles/pages/success'
+import { SuccessContainer, ImageContainer } from '../styles/pages/success'
 
 
 export const getServerSideProps:GetServerSideProps = async ({ query }) => {
@@ -50,7 +50,7 @@ export default function SuccessPage({ customer, products }:SuccessProps) {
       <SuccessContainer>
   		  <h1>Bought succeeded</h1>
 
-        <ProductsContainer>
+        
 				  {products.map((product:any) => (
 					  <ImageContainer key={product.id}>
 						  <Image
@@ -61,7 +61,7 @@ export default function SuccessPage({ customer, products }:SuccessProps) {
               />
             </ImageContainer>
           ))}
-        </ProductsContainer>
+       
 
         <p>Uhhull, <strong>{customer}</strong>, your{products.length > 1 ? 's' : ''} <strong>{products.length} T Shirt{products.length > 1 ? 's' : ''}</strong> {products.length > 1 ? 'are' : 'is'} comming to you, stay tunned!</p>
 

@@ -1,4 +1,4 @@
-import { styled,keyframes, showup } from '../../styles'
+import { styled,keyframes} from '../../styles'
 
 const slidein = keyframes({
   '0%': { marginRight: '-200%' },
@@ -13,7 +13,7 @@ export const ModalOverlay = styled('div', {
   left: 0,
   zIndex: 5,
   backgroundColor: 'rgba(0,0,0,0.6)',
-  animation: `${showup} 300ms 1 cubic-bezier(0 7,0.7,0.7,0.7)`
+  animation: `$300ms 1 cubic-bezier(0 7,0.7,0.7,0.7)`
 })
 
 export const ModalBody = styled('div', {
