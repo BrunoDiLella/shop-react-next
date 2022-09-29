@@ -9,7 +9,7 @@ export const ProductContainer = styled('main', {
   maxWidth: 1100,
   margin: '0 auto',
 
-  '@media(max-width:869px)': {
+  '@media only screen and (max-width:869px)': {
     gridTemplateColumns: '1fr',
     padding: '1rem 1rem 2.5rem'
   }
@@ -33,7 +33,7 @@ export const ImageContainer = styled('div', {
     animation: `${showup} 750ms 1 cubic-bezier(0.7,0.7,0.7,0.7)`
   },
 
-  '@media(max-width:869px)': {
+  '@media only screen and(max-width:869px)': {
     marginInline: 'auto',
     height: 500
   }

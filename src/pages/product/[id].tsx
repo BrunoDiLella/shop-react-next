@@ -26,6 +26,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }
 }
 
+
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const id = params.id as string
   const response = await stripe.products.retrieve(id, {
@@ -114,7 +115,7 @@ export default function Product({ product }: ProductProps) {
 				  {isPerformingCheckout ? (
 					  <Loader small />
             ) : (
-  				  <span>BUY NOW</span>
+  				  <span>Comprar</span>
             )}
           </button>
         </ProductDetails>

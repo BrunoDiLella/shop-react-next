@@ -100,7 +100,7 @@ export function Cart({onClose}:ModalProps) {
 									  () => removeProductFromCart(product.id)
                     }
                   >
-								  REMOVE
+								  Remover
                   </button>
                 </div>
               </CartItem>
@@ -110,12 +110,12 @@ export function Cart({onClose}:ModalProps) {
 
         <Summary>
 				  <p>
-					  quantity
+					  Quantidade
             <span>{cart.length}</span>
           </p>
 
           <strong>
-					  total
+					  Total
             <span>{formatPrice(totalAmount*100)}</span>
           </strong>
         </Summary>
@@ -128,9 +128,9 @@ export function Cart({onClose}:ModalProps) {
 					  <Loader small />
           ) : (
 					  !cart.length ? (
-  					  <span>Go Shopping</span>
+  					  <span>Confirmar compra</span>
   					) : (
-  					  <span>Checkout</span>
+  					  <span>Comprar</span>
             ))}
         </CheckoutButton>
       </ModalBody>

@@ -23,7 +23,7 @@ export const SuccessContainer = styled('main', {
     maxWidth: 560,
     marginTop: '2rem',
 
-    '@media(max-width:869px)': {
+    '@media only screen and(max-width:869px)': {
       maxWidth: '90vw'
     }
   },
