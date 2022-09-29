@@ -4,17 +4,8 @@ const nextConfig = {
   swcMinify: true,
 
   images: {
-    domains: [
-      'files.stripe.com',
-    ],
+    domains: ['files.stripe.com'],
   },
-  
-  experimental: {
-    images: {
-      allowFutureImage: true,
-      newNextLinkBehavior: true,
-    },
-  },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

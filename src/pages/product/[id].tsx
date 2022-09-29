@@ -1,125 +1,110 @@
-import { useState } from 'react'
-import type { InferGetStaticPropsType, GetStaticPaths, GetStaticProps } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
-import { useRouter } from 'next/router'
-import Stripe from 'stripe'
-import {stripe} from '../../lib/stripe'
-import axios from 'axios'
-import { Loader } from '../../components/loader'
-import { ProductDetails, ProductContainer, ImageContainer, Skeleton } from '../../styles/pages/product'
-import { formatPrice } from '../../utils/priceFormat'
+import axios from 'axios';
+import { GetStaticPaths, GetStaticProps } from 'next';
+import Head from 'next/head';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
+import Stripe from 'stripe';
+import { useShoppingCart } from 'use-shopping-cart';
+import { Button } from '../../components/Button';
+import { stripe } from '../../lib/stripe';
+import {
+  ImageContainer,
+  ProductContainer,
+  ProductDetails,
+} from '../../styles/pages/product';
+import { priceFormatter } from '../../utils/formatter';
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const response = await stripe.products.list()
-
-  const paths = response.data.map((product) => ({
-	  params: { id: product.id }
-  }))
-
-  return {
-	  paths: [
-		  ...paths,
-      { params: { id: 'prod_MPMvwGTIVmTef5' } }
-    ],
-    fallback: true
-  }
+interface ProductProps {
+  product: {
+    id: string;
+    name: string;
+    imageUrl: string;
+    price: number;
+    description: string;
+    defaultPriceId: string;
+  };
 }
-
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const id = params.id as string
-  const response = await stripe.products.retrieve(id, {
-	  expand: ['default_price'],
-  })
-
-  const defaultPrice = response.default_price as Stripe.Price
-
-  const product = {
-	  id,
-    priceId: defaultPrice.id,
-    price: formatPrice(defaultPrice.unit_amount),
-	  name: response.name,
-    description: response.description,
-    imageURL: response.images[0]
-  }
-
-  return {
-    props: {
-		  product
-    },
-    revalidate: 60 * 60 * 24 * 7,
-  }
-}
-
-type ProductProps = InferGetStaticPropsType<typeof getStaticProps>
 
 export default function Product({ product }: ProductProps) {
-  const { isFallback } = useRouter()
-  const [isPerformingCheckout, setIsPerformingCheckout] = useState(false)
+  const { isFallback } = useRouter();
+  const { addItem, cartDetails } = useShoppingCart();
+
+  const isExists = Object.values(cartDetails).some(
+    (item) => item.id === product.id,
+  );
 
   async function handleBuyProduct() {
-	  try {
-		  setIsPerformingCheckout(true)
+    const newProduct = {
+      ...product,
+      sku: product.defaultPriceId,
+      price: product.price,
+      currency: 'BRL',
+    };
 
-		  const response = await axios.post(
-			  '/api/checkout',{
-				  lineItems: [
-					  { price: product.priceId, quantity: 1}
-          ]
-			  }
-      )
-
-      const { checkoutUrl } = response.data
-      window.location.href = checkoutUrl
-    } catch {
-		  alert('Falied to perform operation: BUY_OPERATION')
-      setIsPerformingCheckout(false)
-    }
+    addItem(newProduct);
   }
 
-  if(isFallback) {
-	  return (
-		  <Skeleton>
-			  <Loader/>
-      </Skeleton>
-    )
+  //  fallback: true
+  if (isFallback) {
+    return <p>Loading...</p>;
   }
 
   return (
     <>
       <Head>
-		  <title>{product.name} | IgniteShop</title>
+        <title>{product.name} | Ignite Shop</title>
       </Head>
-	  <ProductContainer>
-		  <ImageContainer>
-			  <Image
-				  src={product.imageURL}
-  			  width={520}
-	   			height={480}
-		  		alt=""
-		  	/>
+
+      <ProductContainer>
+        <ImageContainer>
+          <Image src={product.imageUrl} width={520} height={480} alt="" />
         </ImageContainer>
 
         <ProductDetails>
-    		<h1>{product.name}</h1>
-
-          <span>{product.price}</span>
+          <h1>{product.name}</h1>
+          <span>{priceFormatter.format(product.price / 100)}</span>
 
           <p>{product.description}</p>
 
-          <button
-				  onClick={handleBuyProduct}
-            disabled={isPerformingCheckout}
-          >
-				  {isPerformingCheckout ? (
-					  <Loader small />
-            ) : (
-  				  <span>Comprar</span>
-            )}
-          </button>
+          <Button disabled={isExists} onClick={handleBuyProduct}>
+            {isExists ? 'Camiseta adicionada á sacola!' : 'Colocar na sacola'}
+          </Button>
         </ProductDetails>
       </ProductContainer>
     </>
-  )
+  );
 }
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    paths: [{ params: { id: 'prod_MPhvhSYm7G1PXq' } }],
+    fallback: 'blocking', // 'true or false
+  };
+};
+
+export const getStaticProps: GetStaticProps<any, { id: string }> = async ({
+  params,
+}) => {
+  const productId = params.id;
+
+  const product = await stripe.products.retrieve(productId, {
+    expand: ['default_price'],
+  });
+
+  const price = product.default_price as Stripe.Price;
+
+  return {
+    props: {
+      product: {
+        id: product.id,
+        name: product.name,
+        imageUrl: product.images[0],
+        price: price.unit_amount,
+        description: product.description,
+        defaultPriceId: price.id,
+      },
+    },
+    revalidate: 60 * 60 * 1, // 1 hour
+  };
+};

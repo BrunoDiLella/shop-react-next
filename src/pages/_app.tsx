@@ -1,29 +1,31 @@
-import { useState } from 'react'
-import { AppProps } from 'next/app'
+import { AppProps } from 'next/app';
+import { globalStyles } from '../styles/global';
 
-import { Header } from '../components/header'
-import { Cart } from '../components/cart-modal'
+import logoImg from '../assets/logo.svg';
+import Image from 'next/image';
+import { Container, Header } from '../styles/pages/app';
+import Link from 'next/link';
+import { Cart } from '../components/Cart';
+import { CartProvider } from 'use-shopping-cart';
 
-import { CartProvider } from '../contexts/cart'
-import { Container } from '../styles/pages/app'
-import { globalStyles } from '../styles/globals'
+globalStyles();
 
-globalStyles()
-
-function MyApp({ Component, pageProps }: AppProps) {
-  const [isCartOpen, setIsCartOpen] = useState(false)
-
+export default function App({ Component, pageProps }: AppProps) {
   return (
-	  <CartProvider>
-		  {isCartOpen && (
-			  <Cart onClose={()=>setIsCartOpen(false)} />
-      )}
-      <Container>
-        <Header onModalOpen={()=>setIsCartOpen(true)}/>
-        <Component {...pageProps} />
-      </Container>
-    </CartProvider>
-  )
-}
+    <Container>
+      <CartProvider cartMode="checkout-session" stripe="" currency="BRL">
+        <Header>
+          <Link href="/" prefetch={false} passHref>
+            <a>
+              <Image src={logoImg} alt="" />
+            </a>
+          </Link>
 
-export default MyApp
+          <Cart />
+        </Header>
+
+        <Component {...pageProps} />
+      </CartProvider>
+    </Container>
+  );
+}
